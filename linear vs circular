@@ -1,0 +1,74 @@
+clc
+clear;
+close all;
+
+%load 
+filename=input('csv',s)
+data=readmatrix(filename)
+
+%values leni hai aur sampling frequency chaiye
+t=data.time;
+x=data.ecg;
+N=length(x);
+Fs=1/t(2)-t(1);
+
+%add noise
+noise=40*sin(2*pi*50*t);
+x=x+noise;
+
+%moving avg 
+M=5
+h=ones(1,M)/M;
+
+%linear conv
+L=N+M-1
+YL=zeros(1,L);
+
+for n = 1:L;
+    k=1:N;
+      j=n-k+1;
+      if j >=1 && j<=M
+        YL(n)=YL(n)+x(k)*h(j);
+      end
+   end
+end
+
+%circular conv
+Yc=zeros(1,N);
+
+  for n=1:N;
+     for k=1:N;
+         j=mod(n-k,N)+1;
+         if j<=M
+            Yc(n)=Yc(n)+x(k)*h(j);
+          end
+     end
+end
+
+%fft verification
+yFFT=real(ifft(fft(x,L).*fft(h,L)));
+
+%display
+figure;
+
+subplot(4,1,1);
+plot(t,x);
+title('Noisy Signal');
+
+subplot(4,1,2);
+plot(yLinear);
+title('Linear Convolution');
+
+subplot(4,1,3);
+plot(yCircular);
+title('Circular Convolution');
+
+subplot(4,1,4);
+plot(yFFT);
+title('FFT Verification');
+
+
+
+
+
+
