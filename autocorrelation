@@ -1,0 +1,58 @@
+clc;
+clear;
+close all;
+%data load krke lines lena
+data=readtable('csv');
+t=data{:,1};
+x=data{:,end};
+
+%sampling freq
+Fs= 1/t(2)-t(1);
+
+%20-50seconds ka data lena
+idx=t>=20 & t<=50;
+t=t(idx);
+x=x(idx);
+
+%baseline remove
+x=x-movmean(x,Fs)
+
+%autocorrelation
+[r,lags]=xcorr(x);
+r=r/max(r);
+lag=lags/Fs;
+
+%interval search range chaiye (IDX= TRUE YA FALSE KI LIST BNATA HAi)
+idx = lag>=0.4 & lag<=1.5;
+r1=r(idx);
+l1=lag(idx);
+
+%maximum correlation ka index
+[mx,i]=max(r1);
+%heartbeat ka interval
+T=l1(i);
+%heartrate
+HR=60/T;
+
+%PLOTTING
+fprintf('Heartbeat Interval = %.2f seconds\n', T);
+fprintf('Heart Rate = %.0f BPM\n', HR);
+
+% Plot ECG
+subplot(2,1,1);
+plot(t, x);
+title('ECG Signal');
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+grid on;
+
+% Plot autocorrelation
+subplot(2,1,2);
+plot(lag, r);
+title('Autocorrelation');
+xlabel('Lag (seconds)');
+ylabel('Correlation');
+xlim([0 2]);
+grid on;
+
+
