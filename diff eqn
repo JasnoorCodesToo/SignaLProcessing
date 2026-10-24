@@ -1,0 +1,34 @@
+clc;
+clear ;
+close all;
+
+data=readtable();
+x=data.(ipcolum);
+x=double(x);
+x(isnan(x))=0;
+
+y=zeroes(size(x));
+x(1)=y(1);
+
+for k=2:length(x)
+   y(k)=0.7*y(k-1)+0.3*x(k);
+end
+
+%MATLAB filter function
+yfilter=filter(0.3,[1 -0.7],x, x(1));
+
+
+subplot(2,1,1);
+plot(x);
+title('Original Input Signal');
+grid on;
+
+subplot(2,1,2);
+plot(y, 'b');
+hold on;
+plot(y_filter, 'r--');
+title('Manual vs Filter Output');
+legend('Manual Output', 'Filter Output');
+grid on;
+
+
