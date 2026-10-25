@@ -1,0 +1,77 @@
+clc;
+clear;
+close all;
+data=readmatrix();
+x = data(:,1);   % Input signal
+% Impulse response 
+OR h = [1 2 1];
+x = x(~isnan(x));
+x=x(:);
+L = length(x);
+M = length(h);
+N = L + M - 1;
+
+xp=[x;zeroes(N-L,1)];
+hp=[h;zeroes(N-M,1)];
+%Dft
+
+X=zeros(N,1);
+H=zeros(N,1);
+for k=0:N-1
+  for n=0:N-1
+    X(k+1)=X(k+1)+xp(n+1)*exp(-1i*2*pi*k*n/N);
+    H(k+1)=H(k+1)+hp(n+1)*exp(-1i*2*pi*k*n/N);
+  end
+end
+
+    %multiply krooo 
+
+Y=X.*H;
+
+%IDFT
+y=zeroes(N,1);
+ for n=0:N-1
+   for k=0:N-1
+   y(n+1)=y(n+1)+Y(k+1)*exp(1i*2*pi*k*n/N);
+end
+  y(n+1)=y(n+1)/N;
+end
+y=real(y)
+
+  %linear conv
+ylinear=zeros(N,1);
+   for n=1:L
+     for m=1:M
+       ylinear(n+m-1)=ylinear(n+m-1)+x(n)*h(m);
+
+% Display results
+disp('DFT-IDFT convolution:');
+disp(y);
+
+disp('Direct convolution:');
+disp(yd);
+
+disp('Maximum error:');
+disp(max(abs(y-yd)));
+
+% Plot results
+figure;
+subplot(2,2,1);
+stem(x);
+title('Input Signal');
+
+subplot(2,2,2);
+stem(h);
+title('Impulse Response');
+
+subplot(2,2,3);
+stem(yd);
+title('Direct Convolution');
+
+subplot(2,2,4);
+stem(y);
+title('DFT-IDFT Convolution');
+
+   
+
+    
