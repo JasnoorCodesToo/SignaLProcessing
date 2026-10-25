@@ -1,0 +1,145 @@
+lc;
+clear;
+close all;
+
+% Step 1: Read CSV
+data = readmatrix('data.csv');
+
+x = data(:,1);
+h = data(:,2);
+x=x(~isnan(x));
+h=h(~isnan(h));
+L=length(x);
+M=length(h);
+N=max(L,M);
+% Step 2: Zero padding
+xp = [x; zeros(N-L,1)];
+hp = [h; zeros(N-M,1)];
+
+disp('Input x[n]:');
+disp(xp');
+
+disp('Input h[n]:');
+disp(hp');
+
+%DFT
+X = zeros(N,1);
+H = zeros(N,1);
+
+for k = 0:N-1
+    for n = 0:N-1
+        X(k+1) = X(k+1) + xp(n+1)*exp(-1i*2*pi*k*n/N);
+        H(k+1) = H(k+1) + hp(n+1)*exp(-1i*2*pi*k*n/N);
+    end
+end
+
+%multiply
+Y=X.*H;
+
+%idft
+y=zeros(N,1);
+for n=0:N-1;
+  for k=0:N-1;
+     y(n+1)=y(n+1)+Y(k+1)*exp(1i*2*pi*k*n/N);
+end
+    y(n+1) = y(n+1)/N;
+end
+
+y = real(y);
+
+%circular
+yd=zeros(N,1):
+
+for i=0:N-1
+  for k=0:N-1
+      j=mod(i-k,N);
+      yd(i+1)=yd(i+1)+xp(k+1)*hp(j+1)
+
+% Step 7: Linear convolution
+yl = conv(x,h);
+
+% Step 8: Fold linear convolution
+yf = cconv(x,h,N);
+
+--------------------------------
+% Step 9: Display results
+disp('DFT of x[n]:');
+disp(X.');
+
+disp('DFT of h[n]:');
+disp(H.');
+
+disp('Product X[k]H[k]:');
+disp(Y.');
+
+disp('Circular convolution using DFT-IDFT:');
+disp(y.');
+
+disp('Direct circular convolution:');
+disp(yd.');
+
+disp('Linear convolution:');
+disp(yl.');
+
+disp('Folded linear convolution:');
+disp(yf.');
+
+disp('DFT-IDFT maximum error:');
+disp(max(abs(y-yd)));
+
+disp('Folding maximum error:');
+disp(max(abs(yf-yd)));
+
+% Step 10: Plot input signals
+figure;
+subplot(2,2,1);
+stem(0:N-1,xp);
+title('Input x[n]');
+
+subplot(2,2,2);
+stem(0:N-1,hp);
+title('Input h[n]');
+
+% Step 11: Plot magnitude spectra
+subplot(2,2,3);
+stem(0:N-1,abs(X));
+title('Magnitude Spectrum X[k]');
+
+subplot(2,2,4);
+stem(0:N-1,abs(H));
+title('Magnitude Spectrum H[k]');
+
+% Step 12: Plot DFT product
+figure;
+stem(0:N-1,abs(Y));
+title('Magnitude of DFT Product');
+xlabel('Frequency Index k');
+ylabel('Magnitude');
+grid on;
+
+% Step 13: Compare circular convolution methods
+figure;
+stem(0:N-1,yd,'b');
+hold on;
+plot(0:N-1,y,'r--o');
+title('Circular Convolution Comparison');
+legend('Direct Method','DFT-IDFT Method');
+xlabel('Sample Index n');
+grid on;
+
+% Step 14: Compare linear and circular convolution
+figure;
+stem(0:length(yl)-1,yl);
+hold on;
+stem(0:N-1,yf);
+plot(0:N-1,yd,'r--o');
+title('Linear vs Folded vs Circular');
+legend('Linear','Folded Linear','Circular');
+xlabel('Sample Index n');
+grid on;
+
+
+
+
+
+
