@@ -1,0 +1,45 @@
+clc;clear;close all;
+(a)%load dataset
+data=readtable('csv');
+x=data.x;
+v=data.v;
+N=length(x);
+n=data.n;
+
+(B)%operations
+y1=x+v;
+y2=x-v;
+y3=x.*v;
+y4=0.5*v
+
+shift=2;
+y5=zeros(N,1);
+for i=shift+1:N
+   y5(i)=x(i-shift);
+
+y6=zeros(N,1);
+for i=i:N 
+   y6(i)=x(N-i+1):
+end
+
+clc; clear; close all;
+
+fm = 5;
+t = 0:0.001:1;
+x = sin(2*pi*fm*t);
+ %sampling 
+fs = 20;
+[ts, xs] = sample(fm, fs);
+
+plot(t,x);
+hold on;
+stem(ts,xs);
+legend('Original Signal','Sampled Signal');
+title('Sampling Theorem Verification');
+
+function [t,x] = sample(fm,fs)
+    t = 0:1/fs:1;
+    x = sin(2*pi*fm*t);
+end
+
+
