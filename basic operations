@@ -21,7 +21,43 @@ y6=zeros(N,1);
 for i=i:N 
    y6(i)=x(N-i+1):
 end
+figure;
 
+subplot(3,2,1);
+plot(n,y1,'b-o');
+title('Addition: x + v');
+xlabel('Sample'); ylabel('Amplitude');
+grid on;
+
+subplot(3,2,2);
+plot(n,y2,'r-o');
+title('Subtraction: x - v');
+xlabel('Sample'); ylabel('Amplitude');
+grid on;
+
+subplot(3,2,3);
+plot(n,y3,'g-o');
+title('Multiplication: x .* v');
+xlabel('Sample'); ylabel('Amplitude');
+grid on;
+
+subplot(3,2,4);
+plot(n,y4,'m-o');
+title('Amplitude Scaling: 0.5v');
+xlabel('Sample'); ylabel('Amplitude');
+grid on;
+
+subplot(3,2,5);
+stem(n,y5,'filled');
+title('Time Shifting: Right Shift by 2');
+xlabel('Sample'); ylabel('Amplitude');
+grid on;
+
+subplot(3,2,6);
+stem(n,y6,'filled');
+title('Time Reversal: x(N-n+1)');
+xlabel('Sample'); ylabel('Amplitude');
+grid on;
 clc; clear; close all;
 
 fm = 5;
