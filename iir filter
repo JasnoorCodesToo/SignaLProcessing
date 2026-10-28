@@ -1,0 +1,83 @@
+clc;
+clear;
+close all;
+
+% Load data
+T = readtable('data.csv');
+x = T.Births;
+x = x(:);
+
+% User inputs
+fs = input('Enter sampling frequency: ');
+N = input('Enter filter order: ');
+
+disp('1. Low-pass');
+disp('2. High-pass');
+disp('3. Band-pass');
+disp('4. Band-stop');
+
+type = input('Enter filter type: ');
+
+if type == 1
+    fc = input('Enter cutoff frequency: ');
+    Wn = fc/(fs/2);
+    ft = 'low';
+
+elseif type == 2
+    fc = input('Enter cutoff frequency: ');
+    Wn = fc/(fs/2);
+    ft = 'high';
+
+elseif type == 3
+    f1 = input('Enter lower cutoff frequency: ');
+    f2 = input('Enter upper cutoff frequency: ');
+    Wn = [f1 f2]/(fs/2);
+    ft = 'bandpass';
+
+elseif type == 4
+    f1 = input('Enter lower cutoff frequency: ');
+    f2 = input('Enter upper cutoff frequency: ');
+    Wn = [f1 f2]/(fs/2);
+    ft = 'stop';
+
+else
+    error('Invalid filter type');
+end
+
+% Create IIR Butterworth filter
+[b,a] = butter(N,Wn,ft);
+
+% Initialize output
+y = zeros(length(x),1);
+
+% Apply IIR filter
+y = filter(b,a,x);
+
+% Display input signal
+figure;
+plot(x);
+title('Original Input Signal');
+xlabel('Sample Number');
+ylabel('Amplitude');
+grid on;
+
+% Display IIR frequency response
+figure;
+freqz(b,a,1024,fs);
+title('IIR Butterworth Frequency Response');
+
+% Display filtered output
+figure;
+plot(y);
+title('IIR Filtered Output');
+xlabel('Sample Number');
+ylabel('Amplitude');
+grid on;
+
+% Save filtered output
+output = table(y,'VariableNames',{'IIR_Output'});
+writetable(output,'IIR_Output.csv');
+
+disp('IIR filtering completed successfully!');
+disp('Output saved as IIR_Output.csv');
+```
