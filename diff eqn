@@ -13,7 +13,17 @@ x(1)=y(1);
 for k=2:length(x)
    y(k)=0.7*y(k-1)+0.3*x(k);
 end
+% Initial condition
+y_prev = 0;
 
+% Manual solution
+for n = 1:length(x)
+    y(n) = 0.7*y_prev + 0.3*x(n);
+    y_prev = y(n);
+end
+
+% MATLAB filter function
+y_filter = filter(0.3, [1 -0.7], x, 0);
 %MATLAB filter function
 yfilter=filter(0.3,[1 -0.7],x, x(1));
 
